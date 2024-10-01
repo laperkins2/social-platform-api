@@ -4,12 +4,18 @@ require('dotenv').config();
 // import Express
 import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
+import supabase from '../supabaseInstance';
 
 //import cors
 const cors = require('cors');
 
 //import Axios
 const axios = require('axios');
+
+// import routes
+import { getAllPosts, addPost } from './routes/posts';
+import { getAllCommentsByID, addComment } from './routes/comments';
+import { getAllLikesByID, likePost, likeComment } from './routes/likes';
 
 //create an express application
 const app = express();
@@ -34,6 +40,23 @@ app.use(express.json());
 app.get('/', (request: Request, response: Response, next: NextFunction) => {
   response.json({ message: 'Welcome to the social platform API' });
 });
+
+//Post a new post
+app.post('/posts', addPost);
+
+//Get all posts
+app.get('/posts', getAllPosts);
+
+//Post a new comment
+app.post('/posts/:id/comments', addComment);
+
+//Get all comments by ID
+app.get('/posts/:id/comments', getAllCommentsByID);
+app.post('/comments/:id/likes', likeComment);
+
+//Get all likes by ID
+app.get('/posts/:id/likes', getAllLikesByID);
+app.post('/posts/:id/likes', likePost);
 
 //error handling
 //generic error handling middleware
