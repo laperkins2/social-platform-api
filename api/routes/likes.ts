@@ -8,13 +8,16 @@ const getAllLikesByID = async (
 ) => {
   try {
     const likesID = request.params.id;
-    const { data, error } = await supabase.get(
-      `/postlike?commentid=eq.${likesID}`
-    );
+    const { data } = await supabase
+      .get(`/postlike?commentid=eq.${likesID}`)
+      .catch((error) => {
+        console.log(error);
+        response.status(500).json({ error: error.message });
+        return { data: null };
+      });
 
-    if (error) {
-      console.log(error);
-      response.status(500).json({ error: error.message });
+    if (!data) {
+      return;
     }
 
     response.json(data);
@@ -23,16 +26,25 @@ const getAllLikesByID = async (
   }
 };
 
-const likePost = (request: Request, response: Response, next: NextFunction) => {
+const likePost = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   const postId = request.params.id;
 
   try {
-    const { data, error } = supabase.post('postlike', {
-      postid: postId,
-    });
+    const { data } = await supabase
+      .post('postlike', {
+        postid: postId,
+      })
+      .catch((error) => {
+        response.status(500).json({ error: error.message });
+        return { data: null };
+      });
 
-    if (error) {
-      response.status(500).json({ error: error.message });
+    if (!data) {
+      return;
     }
 
     response.status(201).json(data);
@@ -41,7 +53,7 @@ const likePost = (request: Request, response: Response, next: NextFunction) => {
   }
 };
 
-const likeComment = (
+const likeComment = async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -49,12 +61,17 @@ const likeComment = (
   const commentId = request.params.id;
 
   try {
-    const { data, error } = supabase.post('commentlike', {
-      commentid: commentId,
-    });
+    const { data } = await supabase
+      .post('commentlike', {
+        commentid: commentId,
+      })
+      .catch((error) => {
+        response.status(500).json({ error: error.message });
+        return { data: null };
+      });
 
-    if (error) {
-      response.status(500).json({ error: error.message });
+    if (!data) {
+      return;
     }
 
     response.status(201).json(data);

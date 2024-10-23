@@ -8,13 +8,11 @@ const getAllCommentsByID = async (
 ) => {
   try {
     const commentsID = request.params.id;
-    const { data, error } = await supabase.get(
-      `/comment?postid=eq.${commentsID}`
-    );
+    const { data } = await supabase.get(`/comment?postid=eq.${commentsID}`);
 
-    if (error) {
-      console.log(error);
-      response.status(500).json({ error: error.message });
+    if (!data) {
+      response.status(500).json({ error: 'Failed to fetch comments' });
+      return;
     }
 
     response.json(data);
@@ -23,7 +21,7 @@ const getAllCommentsByID = async (
   }
 };
 
-const addComment = (
+const addComment = async (
   request: Request,
   response: Response,
   next: NextFunction
@@ -32,13 +30,14 @@ const addComment = (
   const { content } = request.body;
 
   try {
-    const { data, error } = supabase.post('comment', {
+    const { data } = await supabase.post('comment', {
       postid: postId,
       content,
     });
 
-    if (error) {
-      response.status(500).json({ error: error.message });
+    if (!data) {
+      response.status(500).json({ error: 'Failed to add comment' });
+      return;
     }
 
     response.status(201).json(data);

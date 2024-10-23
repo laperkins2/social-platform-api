@@ -3,14 +3,9 @@ require('dotenv').config();
 
 // import Express
 import express, { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
-import supabase from '../supabaseInstance';
 
 //import cors
 const cors = require('cors');
-
-//import Axios
-const axios = require('axios');
 
 // import routes
 import { getAllPosts, addPost } from './routes/posts';

@@ -7,27 +7,28 @@ const getAllPosts = async (
   next: NextFunction
 ) => {
   try {
-    const { data, error } = await supabase.get('/post');
-    if (error) {
-      response.status(500).json({ error: error.message });
-    }
-
+    const { data } = await supabase.get('/post');
     response.json(data);
   } catch (error) {
     next(error);
   }
 };
 
-const addPost = (request: Request, response: Response, next: NextFunction) => {
+const addPost = async (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   const { content } = request.body;
 
   try {
-    const { data, error } = supabase.post('post', {
+    const { data } = await supabase.post('post', {
       content,
     });
 
-    if (error) {
-      response.status(500).json({ error: error.message });
+    if (!data) {
+      response.status(500).json({ error: 'Failed to add post' });
+      return;
     }
 
     response.status(201).json(data);
